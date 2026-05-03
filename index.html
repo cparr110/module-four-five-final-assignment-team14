@@ -212,7 +212,7 @@ function createComparisonChart(svgId, colors, title) {
         d => d.Year
       ),
       ([year, sums]) => sums
-    ).sort((a, b) => a.Year - b.Year);
+    ).sort((a, b) => a.Year - b.Year).filter(d => d.Year > 1985);
 
     // X scale
     const x = d3.scaleLinear()
@@ -516,8 +516,8 @@ function priceOverTimeChart(svgId, color){
 
 // Colors for chart 1: Kerosene red, Geothermal green
 const colors1 = {
-  "Consumption.Industrial.Geothermal": "#1a9850",
-  "Consumption.Industrial.Kerosene": "#d73027"
+  "Consumption.Industrial.Geothermal": "#d73027",
+  "Consumption.Industrial.Kerosene": "#1a9850"
 };
 
 // Colors for chart 2: Both shades of blue
