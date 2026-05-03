@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visualizations</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://unpkg.com/topojson@3"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+    .tooltip {
+      position: absolute;
+      background: white;
+      border: 1px solid #ccc;
+      padding: 6px;
+      pointer-events: none;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+<h1>Preliminary Design</h1>
+<svg width="1200" height="500"></svg>
+
+<script>
+const margin = { top: 40, right: 280, bottom: 40, left: 60 },
+      width = 1200 - margin.left - margin.right,
+      height = 500 - margin.top - margin.bottom;
+
+const svg = d3.select("svg")
+  .append("g")
+  .attr("transform", `translate(${margin.left},${margin.top})`);
+
+// Use actual CSV headers from energy.csv
+const keys = [
+  "Consumption.Industrial.Kerosene",
+  "Consumption.Industrial.Solar",
+  "Consumption.Industrial.Geothermal",
+  "Consumption.Industrial.Hydropower",
+];
+
+const color = d3.scaleOrdinal()
+  .domain(keys)
+  .range([
+    "#d73027", // Production.Coal
+    "#4575b4", // Consumption.Industrial.Petroleum
+    "#fdae61", // Consumption.Industrial.Geothermal
+    "#1a9850"  // Consumption.Industrial.Hydropower
+  ]);
+
+d3.csv("energy.csv").then(data => {
+  console.log("Loaded CSV columns:", data.columns);
+
+  // Convert types and zero out missing values
+  data.forEach(d => {
+    d.Year = +d.Year;
+    keys.forEach(k => {
+      d[k] = +d[k];
+      if (isNaN(d[k])) {
+        d[k] = 0;
+      }
+    });
+  });
+
+  // Aggregate all states by year to show U.S. totals
+  const aggregated = Array.from(
+    d3.rollup(
+      data,
+      values => {
+        const sums = { Year: values[0].Year };
+        keys.forEach(k => {
+          sums[k] = d3.sum(values, v => v[k]);
+        });
+        return sums;
+      },
+      d => d.Year
+    ),
+    ([year, sums]) => sums
+  ).sort((a, b) => a.Year - b.Year);
+
+  // X scale
+  const x = d3.scaleLinear()
+    .domain(d3.extent(aggregated, d => d.Year))
+    .range([0, width]);
+
+  // Y scale (max of all selected variables)
+  const y = d3.scaleLinear()
+    .domain([0, d3.max(aggregated, d => d3.max(keys, k => d[k]))])
+    .range([height, 0]);
+
+  // Line generator
+  const line = d3.line()
+    .defined(d => !isNaN(d.value))
+    .x(d => x(d.data.Year))
+    .y(d => y(d.value));
+
+  const series = keys.map(key => ({
+    key,
+    values: aggregated.map(d => ({ data: d, value: d[key] }))
+  }));
+
+  svg.selectAll(".line")
+    .data(series)
+    .join("path")
+    .attr("class", "line")
+    .attr("fill", "none")
+    .attr("stroke", d => color(d.key))
+    .attr("stroke-width", 2)
+    .attr("d", d => line(d.values));
+
+  // Axes
+  svg.append("g")
+    .attr("transform", `translate(0,${height})`)
+    .call(d3.axisBottom(x).tickFormat(d3.format("d")));
+
+  svg.append("g")
+    .call(d3.axisLeft(y));
+
+  // X-axis label
+  svg.append("text")
+    .attr("x", width / 2)
+    .attr("y", height + 35)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "14px")
+    .text("Year");
+
+  // Y-axis label
+  svg.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 0 - 45)
+    .attr("x", 0 - (height / 2))
+    .attr("text-anchor", "middle")
+    .attr("font-size", "14px")
+    .text("Consumption (Billion BTU)");
+
+ 
+  svg.append("text")
+    .attr("x", 0)
+    .attr("y", -10)
+    .attr("font-size", "16px")
+    .attr("font-weight", "bold")
+    .text("U.S. Industrial Energy Consumption by Source (2000–2019)");
+
+  // Legend
+  const legend = svg.selectAll(".legend")
+    .data("Kerosene, Solar, Geothermal, Hydropower".split(", "))
+    .enter()
+    .append("g")
+    .attr("transform", (d, i) => `translate(${width + 20}, ${i * 20})`);
+
+  legend.append("rect")
+    .attr("width", 15)
+    .attr("height", 15)
+    .attr("fill", d => color(d));
+
+  legend.append("text")
+    .attr("x", 20)
+    .attr("y", 12)
+    .text(d => d);
+
+}).catch(error => {
+  console.error("Failed to load or parse energy.csv:", error);
+});
+</script>
+
+<h2>Survey 1</h2>
+<svg id="survey1" width="1000" height="500"></svg>
+<svg id="survey1-map" width="1000" height="500"></svg>
+<svg id="survey1-price" width="1000" height="500"></svg>
+
+<h2>Survey 2</h2>
+<svg id="survey2" width="1000" height="500"></svg>
+<svg id="survey2-map" width="1000" height="500"></svg>
+<svg id="survey2-price" width="1000" height="500"></svg>
+
+<script>
+function createComparisonChart(svgId, colors, title) {
+  const margin = { top: 40, right: 280, bottom: 40, left: 60 };
+  const chartWidth = 1000 - margin.left - margin.right;
+  const chartHeight = 500 - margin.top - margin.bottom;
+
+  const svg = d3.select(`#${svgId}`)
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+  const comparisonKeys = ["Consumption.Industrial.Geothermal", "Consumption.Industrial.Kerosene"];
+
+  d3.csv("energy.csv").then(data => {
+    // Convert types and zero out missing values
+    data.forEach(d => {
+      d.Year = +d.Year;
+      comparisonKeys.forEach(k => {
+        d[k] = +d[k];
+        if (isNaN(d[k])) {
+          d[k] = 0;
+        }
+      });
+    });
+
+    // Aggregate all states by year
+    const aggregated = Array.from(
+      d3.rollup(
+        data,
+        values => {
+          const sums = { Year: values[0].Year };
+          comparisonKeys.forEach(k => {
+            sums[k] = d3.sum(values, v => v[k]);
+          });
+          return sums;
+        },
+        d => d.Year
+      ),
+      ([year, sums]) => sums
+    ).sort((a, b) => a.Year - b.Year);
+
+    // X scale
+    const x = d3.scaleLinear()
+      .domain(d3.extent(aggregated, d => d.Year))
+      .range([0, chartWidth]);
+
+    // Y scale
+    const y = d3.scaleLinear()
+      .domain([0, d3.max(aggregated, d => d3.max(comparisonKeys, k => d[k]))])
+      .range([chartHeight, 0]);
+
+    // Line generator
+    const line = d3.line()
+      .defined(d => !isNaN(d.value))
+      .x(d => x(d.data.Year))
+      .y(d => y(d.value));
+
+    const series = comparisonKeys.map(key => ({
+      key,
+      values: aggregated.map(d => ({ data: d, value: d[key] }))
+    }));
+
+    // Draw lines
+    svg.selectAll(".line")
+      .data(series)
+      .join("path")
+      .attr("class", "line")
+      .attr("fill", "none")
+      .attr("stroke", d => colors[d.key])
+      .attr("stroke-width", 2)
+      .attr("d", d => line(d.values));
+
+    // Axes
+    svg.append("g")
+      .attr("transform", `translate(0,${chartHeight})`)
+      .call(d3.axisBottom(x).tickFormat(d3.format("d")));
+
+    svg.append("g")
+      .call(d3.axisLeft(y));
+
+    // X-axis label
+    svg.append("text")
+      .attr("x", chartWidth / 2)
+      .attr("y", chartHeight + 35)
+      .attr("text-anchor", "middle")
+      .attr("font-size", "14px")
+      .text("Year");
+
+    // Y-axis label
+    svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - 45)
+      .attr("x", 0 - (chartHeight / 2))
+      .attr("text-anchor", "middle")
+      .attr("font-size", "14px")
+      .text("Consumption (Billion BTU)");
+
+    // Title
+    svg.append("text")
+      .attr("x", 0)
+      .attr("y", -10)
+      .attr("font-size", "16px")
+      .attr("font-weight", "bold")
+      .text(title);
+
+    // Legend
+    const legend = svg.selectAll(".legend")
+      .data(comparisonKeys)
+      .enter()
+      .append("g")
+      .attr("transform", (d, i) => `translate(${chartWidth + 20}, ${i * 20})`);
+
+    legend.append("rect")
+      .attr("width", 15)
+      .attr("height", 15)
+      .attr("fill", d => colors[d]);
+
+    legend.append("text")
+      .attr("x", 20)
+      .attr("y", 12)
+      .attr("font-size", "12px")
+      .text(d => d.replace("Consumption.Industrial.", ""));
+  });
+
+  
+}
+
+function createMapChart(svgId, colorInterpolator){
+
+  const mapWidth = 1000;
+  const mapHeight = 500;
+
+  const svg = d3.select(`#${svgId}`);
+  const g = svg.append("g").attr("transform", "translate(0, 40)");
+    
+
+  Promise.all([
+    d3.csv("energy.csv"),
+    d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json")
+  ]).then(([data, us]) => {
+
+    // most recent year only
+    const filtered = data.filter(d => +d.Year === 2019);
+
+    
+    const geoByState = {};
+    filtered.forEach(d => {
+      geoByState[d.State] = +d["Consumption.Industrial.Geothermal"] || 0;
+    });
+
+    // look at all states
+    // const westCoast = new Set(["California", "Oregon", "Washington", "Alaska", "Hawaii"]);
+
+    // FIPS state mapping - expanded to all states
+    const idToState = {
+      "01": "Alabama",
+      "02": "Alaska",
+      "04": "Arizona",
+      "05": "Arkansas",
+      "06": "California",
+      "08": "Colorado",
+      "09": "Connecticut",
+      "10": "Delaware",
+      "11": "District of Columbia",
+      "12": "Florida",
+      "13": "Georgia",
+      "15": "Hawaii",
+      "16": "Idaho",
+      "17": "Illinois",
+      "18": "Indiana",
+      "19": "Iowa",
+      "20": "Kansas",
+      "21": "Kentucky",
+      "22": "Louisiana",
+      "23": "Maine",
+      "24": "Maryland",
+      "25": "Massachusetts",
+      "26": "Michigan",
+      "27": "Minnesota",
+      "28": "Mississippi",
+      "29": "Missouri",
+      "30": "Montana",
+      "31": "Nebraska",
+      "32": "Nevada",
+      "33": "New Hampshire",
+      "34": "New Jersey",
+      "35": "New Mexico",
+      "36": "New York",
+      "37": "North Carolina",
+      "38": "North Dakota",
+      "39": "Ohio",
+      "40": "Oklahoma",
+      "41": "Oregon",
+      "42": "Pennsylvania",
+      "44": "Rhode Island",
+      "45": "South Carolina",
+      "46": "South Dakota",
+      "47": "Tennessee",
+      "48": "Texas",
+      "49": "Utah",
+      "50": "Vermont",
+      "51": "Virginia",
+      "53": "Washington",
+      "54": "West Virginia",
+      "55": "Wisconsin",
+      "56": "Wyoming"
+    };
+
+    
+    const projection = d3.geoAlbersUsa()
+      .fitSize([mapWidth, mapHeight],
+        topojson.feature(us, us.objects.states)
+      );
+
+    const path = d3.geoPath().projection(projection);
+
+    const states = topojson.feature(us, us.objects.states).features;
+
+    // color scale based on geothermal consumption
+    const values = Object.values(geoByState);
+
+    const color = d3.scaleSequential()
+      .domain([0, d3.max(values)])
+      .interpolator(colorInterpolator);
+
+   
+
+    //  draw map
+    g.selectAll("path")
+      .data(states)
+      .join("path")
+      .attr("d", path)
+      .attr("fill", d => {
+        const stateName = d.properties.name;
+
+        const val = geoByState[stateName];
+        return val !== undefined ? color(val) : "#eee";
+      })
+      .attr("stroke", "#fff")
+      .attr("stroke-width", 0.5);
+
+    
+    svg.append("text")
+      .attr("x", 10)
+      .attr("y", 20)
+      .attr("font-size", "14px")
+      .attr("font-weight", "bold")
+      .text("Industrial Geothermal Consumption (All US States, 2019)")
+      
+
+  });
+}
+
+function priceOverTimeChart(svgId, color){
+     const margin = { top: 40, right: 100, bottom: 40, left: 60 };
+  const width = 1000 - margin.left - margin.right;
+  const height = 500 - margin.top - margin.bottom;
+
+  const svg = d3.select(`#${svgId}`)
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+  d3.csv("energy.csv").then(data => {
+
+    // convert types
+    data.forEach(d => {
+      d.Year = +d.Year;
+      d["Price.Industrial.Kerosene"] = +d["Price.Industrial.Kerosene"] || 0;
+    });
+
+    // aggregate across all states by year
+    const aggregated = Array.from(
+      d3.rollup(
+        data,
+        values => ({
+          Year: values[0].Year,
+          price: d3.mean(values, v => v["Price.Industrial.Kerosene"])
+        }),
+        d => d.Year
+      ),
+      ([year, val]) => val
+    ).sort((a, b) => a.Year - b.Year);
+
+    // scales
+    const x = d3.scaleLinear()
+      .domain(d3.extent(aggregated, d => d.Year))
+      .range([0, width]);
+
+    const y = d3.scaleLinear()
+      .domain([0, d3.max(aggregated, d => d.price)])
+      .range([height, 0]);
+
+    // line generator
+    const line = d3.line()
+      .x(d => x(d.Year))
+      .y(d => y(d.price));
+
+    // draw line
+    svg.append("path")
+      .datum(aggregated)
+      .attr("fill", "none")
+      .attr("stroke", color)
+      .attr("stroke-width", 2)
+      .attr("d", line);
+
+    // axes
+    svg.append("g")
+      .attr("transform", `translate(0,${height})`)
+      .call(d3.axisBottom(x).tickFormat(d3.format("d")));
+
+    svg.append("g")
+      .call(d3.axisLeft(y));
+
+    // labels
+    svg.append("text")
+      .attr("x", width / 2)
+      .attr("y", height + 35)
+      .attr("text-anchor", "middle")
+      .text("Year");
+
+    svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", -45)
+      .attr("x", -height / 2)
+      .attr("text-anchor", "middle")
+      .text("Price (in USD per Million BTU)");
+
+    // title
+    svg.append("text")
+      .attr("x", 0)
+      .attr("y", -10)
+      .attr("font-weight", "bold")
+      .text("Industrial Kerosene Price Over Time");
+  });
+}
+
+
+
+
+
+
+// Colors for chart 1: Kerosene red, Geothermal green
+const colors1 = {
+  "Consumption.Industrial.Geothermal": "#1a9850",
+  "Consumption.Industrial.Kerosene": "#d73027"
+};
+
+// Colors for chart 2: Both shades of blue
+const colors2 = {
+  "Consumption.Industrial.Geothermal": "#1a5490",
+  "Consumption.Industrial.Kerosene": "#6ba3d8"
+};
+
+createComparisonChart("survey1", colors1, "Consumption of Geothermal vs Kerosene");
+createComparisonChart("survey2", colors2, "Consumption of Geothermal vs Kerosene");
+createMapChart("survey1-map", d3.interpolateReds);
+createMapChart("survey2-map", d3.interpolateBlues);
+priceOverTimeChart("survey1-price", "red");
+priceOverTimeChart("survey2-price", "blue");
+
+</script>
+
+</body>
+</html>
