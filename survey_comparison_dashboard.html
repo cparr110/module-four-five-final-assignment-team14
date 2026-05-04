@@ -1,0 +1,344 @@
+
+<h2 class="sr-only">Survey comparison dashboard showing response differences between Survey 1 (Alarm condition) and Survey 2 (Inverted/Neutral condition) across all questions</h2>
+
+<style>
+  .dash { font-family: var(--font-sans); padding: 1rem 0; }
+  .section-label { font-size: 11px; font-weight: 500; letter-spacing: .06em; color: var(--color-text-tertiary); text-transform: uppercase; margin: 0 0 6px; }
+  .q-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 12px; }
+  .q-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 12px; }
+  .survey-row { display: flex; gap: 10px; margin-bottom: 8px; align-items: flex-start; }
+  .survey-tag { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 4px; white-space: nowrap; min-width: 64px; text-align: center; }
+  .s1-tag { background: #B5D4F4; color: #0C447C; }
+  .s2-tag { background: #C0DD97; color: #27500A; }
+  .bar-wrap { flex: 1; }
+  .bar-item { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .bar-label { font-size: 12px; color: var(--color-text-secondary); min-width: 190px; }
+  .bar-track { flex: 1; height: 14px; background: var(--color-background-tertiary); border-radius: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; transition: width .3s; }
+  .bar-pct { font-size: 11px; color: var(--color-text-tertiary); min-width: 32px; text-align: right; }
+  .s1-fill { background: #378ADD; }
+  .s2-fill { background: #639922; }
+  .diff-badge { font-size: 11px; padding: 2px 7px; border-radius: 4px; font-weight: 500; white-space: nowrap; }
+  .diff-up { background: #EAF3DE; color: #3B6D11; }
+  .diff-down { background: #FCEBEB; color: #A32D2D; }
+  .diff-same { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+  .avg-row { display: flex; gap: 8px; margin-top: 8px; align-items: center; flex-wrap: wrap; }
+  .avg-box { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 6px 12px; font-size: 12px; }
+  .avg-box span { font-weight: 500; font-size: 14px; display: block; }
+  .section-divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 20px 0 16px; }
+  .section-head { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 12px; }
+  .identical-badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--color-background-secondary); color: var(--color-text-tertiary); }
+  .open-text { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; padding: 8px 10px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); border-left: 2px solid var(--color-border-secondary); margin-bottom: 6px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 520px) { .grid2 { grid-template-columns: 1fr; } .bar-label { min-width: 130px; } }
+</style>
+
+<div class="dash">
+
+  <p class="section-label">Module four — color bias experiment</p>
+  <p class="section-head">Survey 1 (Alarm: coal=red) vs. Survey 2 (Inverted/Neutral)</p>
+
+  <hr class="section-divider">
+  <p class="section-label">Factual questions</p>
+
+  <div class="q-card">
+    <p class="q-title">Q1 — General trend of industrial geothermal consumption (past 30 years)?</p>
+    <div class="survey-row">
+      <span class="survey-tag s1-tag">Survey 1</span>
+      <div class="bar-wrap">
+        <div class="bar-item"><span class="bar-label">Increasing</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:75%"></div></div><span class="bar-pct">75%</span></div>
+        <div class="bar-item"><span class="bar-label">No change</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:25%"></div></div><span class="bar-pct">25%</span></div>
+      </div>
+    </div>
+    <div class="survey-row">
+      <span class="survey-tag s2-tag">Survey 2</span>
+      <div class="bar-wrap">
+        <div class="bar-item"><span class="bar-label">Increasing</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:100%"></div></div><span class="bar-pct">100%</span></div>
+      </div>
+    </div>
+    <div class="avg-row">
+      <span class="diff-badge diff-up">Survey 2 more accurate</span>
+      <span style="font-size:12px; color:var(--color-text-tertiary)">1 respondent in S1 answered "No Change"</span>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <p class="q-title">Q12 — Which did the U.S. consume more of in 2005: kerosene or geothermal?</p>
+    <div class="survey-row">
+      <span class="survey-tag s1-tag">Survey 1</span>
+      <div class="bar-wrap"><div class="bar-item"><span class="bar-label">Kerosene</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:100%"></div></div><span class="bar-pct">100%</span></div></div>
+    </div>
+    <div class="survey-row">
+      <span class="survey-tag s2-tag">Survey 2</span>
+      <div class="bar-wrap"><div class="bar-item"><span class="bar-label">Kerosene</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:100%"></div></div><span class="bar-pct">100%</span></div></div>
+    </div>
+    <div class="avg-row"><span class="diff-badge diff-same">Identical</span></div>
+  </div>
+
+  <div class="q-card">
+    <p class="q-title">Q23 — Which state consumes the most geothermal energy?</p>
+    <div class="survey-row">
+      <span class="survey-tag s1-tag">Survey 1</span>
+      <div class="bar-wrap"><div class="bar-item"><span class="bar-label">California</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:100%"></div></div><span class="bar-pct">100%</span></div></div>
+    </div>
+    <div class="survey-row">
+      <span class="survey-tag s2-tag">Survey 2</span>
+      <div class="bar-wrap"><div class="bar-item"><span class="bar-label">California</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:100%"></div></div><span class="bar-pct">100%</span></div></div>
+    </div>
+    <div class="avg-row"><span class="diff-badge diff-same">Identical</span></div>
+  </div>
+
+  <div class="q-card">
+    <p class="q-title">Q32 — When did kerosene prices experience the largest decline?</p>
+    <div class="survey-row">
+      <span class="survey-tag s1-tag">Survey 1</span>
+      <div class="bar-wrap">
+        <div class="bar-item"><span class="bar-label">2010–2015</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:75%"></div></div><span class="bar-pct">75%</span></div>
+        <div class="bar-item"><span class="bar-label">2015–2020</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:25%"></div></div><span class="bar-pct">25%</span></div>
+      </div>
+    </div>
+    <div class="survey-row">
+      <span class="survey-tag s2-tag">Survey 2</span>
+      <div class="bar-wrap">
+        <div class="bar-item"><span class="bar-label">2010–2015</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:100%"></div></div><span class="bar-pct">100%</span></div>
+      </div>
+    </div>
+    <div class="avg-row"><span class="diff-badge diff-up">Survey 2 more accurate</span><span style="font-size:12px;color:var(--color-text-tertiary)">1 respondent in S1 picked wrong window</span></div>
+  </div>
+
+  <div class="q-card">
+    <p class="q-title">Q33 — Kerosene price in 2005 vs. 1990?</p>
+    <div class="survey-row">
+      <span class="survey-tag s1-tag">Survey 1</span>
+      <div class="bar-wrap">
+        <div class="bar-item"><span class="bar-label">Higher in 2005</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:75%"></div></div><span class="bar-pct">75%</span></div>
+        <div class="bar-item"><span class="bar-label">Same as 1990</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:25%"></div></div><span class="bar-pct">25%</span></div>
+      </div>
+    </div>
+    <div class="survey-row">
+      <span class="survey-tag s2-tag">Survey 2</span>
+      <div class="bar-wrap">
+        <div class="bar-item"><span class="bar-label">Higher in 2005</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:100%"></div></div><span class="bar-pct">100%</span></div>
+      </div>
+    </div>
+    <div class="avg-row"><span class="diff-badge diff-up">Survey 2 more accurate</span></div>
+  </div>
+
+  <hr class="section-divider">
+  <p class="section-label">Sentiment &amp; attitude questions</p>
+
+  <div class="q-card">
+    <p class="q-title">Q15 — Support/oppose bill limiting industrial geothermal consumption</p>
+    <div class="survey-row">
+      <span class="survey-tag s1-tag">Survey 1</span>
+      <div class="bar-wrap">
+        <div class="bar-item"><span class="bar-label">Strongly oppose</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:50%"></div></div><span class="bar-pct">50%</span></div>
+        <div class="bar-item"><span class="bar-label">Somewhat oppose</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:25%"></div></div><span class="bar-pct">25%</span></div>
+        <div class="bar-item"><span class="bar-label">Somewhat support</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:25%"></div></div><span class="bar-pct">25%</span></div>
+      </div>
+    </div>
+    <div class="survey-row">
+      <span class="survey-tag s2-tag">Survey 2</span>
+      <div class="bar-wrap">
+        <div class="bar-item"><span class="bar-label">Strongly oppose</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:50%"></div></div><span class="bar-pct">50%</span></div>
+        <div class="bar-item"><span class="bar-label">Somewhat oppose</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:25%"></div></div><span class="bar-pct">25%</span></div>
+        <div class="bar-item"><span class="bar-label">Somewhat support</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:25%"></div></div><span class="bar-pct">25%</span></div>
+      </div>
+    </div>
+    <div class="avg-row"><span class="diff-badge diff-same">Identical — avg 2.00 both</span></div>
+  </div>
+
+  <div class="q-card">
+    <p class="q-title">Q16 — Feelings about kerosene as an energy source</p>
+    <div class="survey-row">
+      <span class="survey-tag s1-tag">Survey 1</span>
+      <div class="bar-wrap">
+        <div class="bar-item"><span class="bar-label">Very negatively</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:25%"></div></div><span class="bar-pct">25%</span></div>
+        <div class="bar-item"><span class="bar-label">Somewhat negatively</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:50%"></div></div><span class="bar-pct">50%</span></div>
+        <div class="bar-item"><span class="bar-label">Neutral</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:25%"></div></div><span class="bar-pct">25%</span></div>
+      </div>
+    </div>
+    <div class="survey-row">
+      <span class="survey-tag s2-tag">Survey 2</span>
+      <div class="bar-wrap">
+        <div class="bar-item"><span class="bar-label">Very negatively</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:0%"></div></div><span class="bar-pct">0%</span></div>
+        <div class="bar-item"><span class="bar-label">Somewhat negatively</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:75%"></div></div><span class="bar-pct">75%</span></div>
+        <div class="bar-item"><span class="bar-label">Neutral</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:25%"></div></div><span class="bar-pct">25%</span></div>
+      </div>
+    </div>
+    <div class="avg-row">
+      <div class="avg-box">S1 avg <span>2.00</span></div>
+      <div class="avg-box">S2 avg <span>2.25</span></div>
+      <span class="diff-badge diff-down">S1 more negative — 1 "Very Neg" vs. 0</span>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <p class="q-title">Q17 — Feelings about geothermal energy</p>
+    <div class="survey-row">
+      <span class="survey-tag s1-tag">Survey 1</span>
+      <div class="bar-wrap">
+        <div class="bar-item"><span class="bar-label">Somewhat positively</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:75%"></div></div><span class="bar-pct">75%</span></div>
+        <div class="bar-item"><span class="bar-label">Very positively</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:25%"></div></div><span class="bar-pct">25%</span></div>
+      </div>
+    </div>
+    <div class="survey-row">
+      <span class="survey-tag s2-tag">Survey 2</span>
+      <div class="bar-wrap">
+        <div class="bar-item"><span class="bar-label">Somewhat positively</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:75%"></div></div><span class="bar-pct">75%</span></div>
+        <div class="bar-item"><span class="bar-label">Very positively</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:25%"></div></div><span class="bar-pct">25%</span></div>
+      </div>
+    </div>
+    <div class="avg-row"><span class="diff-badge diff-same">Identical — avg 4.25 both</span></div>
+  </div>
+
+  <div class="q-card">
+    <p class="q-title">Q19 — Support for government investment in geothermal</p>
+    <div class="survey-row">
+      <span class="survey-tag s1-tag">Survey 1</span>
+      <div class="bar-wrap">
+        <div class="bar-item"><span class="bar-label">Somewhat support</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:100%"></div></div><span class="bar-pct">100%</span></div>
+      </div>
+    </div>
+    <div class="survey-row">
+      <span class="survey-tag s2-tag">Survey 2</span>
+      <div class="bar-wrap">
+        <div class="bar-item"><span class="bar-label">Somewhat support</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:75%"></div></div><span class="bar-pct">75%</span></div>
+        <div class="bar-item"><span class="bar-label">Strongly support</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:25%"></div></div><span class="bar-pct">25%</span></div>
+      </div>
+    </div>
+    <div class="avg-row">
+      <div class="avg-box">S1 avg <span>4.00</span></div>
+      <div class="avg-box">S2 avg <span>4.25</span></div>
+      <span class="diff-badge diff-up">S2 slightly stronger support</span>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <p class="q-title">Q24 — Support for $2B federal geothermal investment proposal</p>
+    <div class="survey-row">
+      <span class="survey-tag s1-tag">Survey 1</span>
+      <div class="bar-wrap">
+        <div class="bar-item"><span class="bar-label">Somewhat support</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:100%"></div></div><span class="bar-pct">100%</span></div>
+      </div>
+    </div>
+    <div class="survey-row">
+      <span class="survey-tag s2-tag">Survey 2</span>
+      <div class="bar-wrap">
+        <div class="bar-item"><span class="bar-label">Somewhat support</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:75%"></div></div><span class="bar-pct">75%</span></div>
+        <div class="bar-item"><span class="bar-label">Strongly support</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:25%"></div></div><span class="bar-pct">25%</span></div>
+      </div>
+    </div>
+    <div class="avg-row">
+      <div class="avg-box">S1 avg <span>4.00</span></div>
+      <div class="avg-box">S2 avg <span>4.25</span></div>
+      <span class="diff-badge diff-up">S2 stronger on policy support</span>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+  <p class="section-label">Interpretive questions</p>
+
+  <div class="q-card">
+    <p class="q-title">Q25 — How would you evaluate the patterns shown in the visualization?</p>
+    <div class="survey-row">
+      <span class="survey-tag s1-tag">Survey 1</span>
+      <div class="bar-wrap">
+        <div class="bar-item"><span class="bar-label">Somewhat concerning</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:25%"></div></div><span class="bar-pct">25%</span></div>
+        <div class="bar-item"><span class="bar-label">Neutral</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:50%"></div></div><span class="bar-pct">50%</span></div>
+        <div class="bar-item"><span class="bar-label">Somewhat promising</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:25%"></div></div><span class="bar-pct">25%</span></div>
+      </div>
+    </div>
+    <div class="survey-row">
+      <span class="survey-tag s2-tag">Survey 2</span>
+      <div class="bar-wrap">
+        <div class="bar-item"><span class="bar-label">Neutral</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:50%"></div></div><span class="bar-pct">50%</span></div>
+        <div class="bar-item"><span class="bar-label">Somewhat promising</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:50%"></div></div><span class="bar-pct">50%</span></div>
+      </div>
+    </div>
+    <div class="avg-row">
+      <div class="avg-box">S1 avg <span>3.00</span></div>
+      <div class="avg-box">S2 avg <span>3.50</span></div>
+      <span class="diff-badge diff-up">S2 more optimistic — no "concerning" responses</span>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <p class="q-title">Q26 — Impact of geothermal in the U.S. energy mix (scale 1–10)</p>
+    <div class="avg-row">
+      <div class="avg-box">S1 avg <span>3.50</span></div>
+      <div class="avg-box">S1 range <span>3–5</span></div>
+      <div class="avg-box">S2 avg <span>2.50</span></div>
+      <div class="avg-box">S2 range <span>2–3</span></div>
+    </div>
+    <div class="avg-row" style="margin-top:8px"><span class="diff-badge diff-down">Largest numeric gap — S1 rated geothermal impact higher</span></div>
+  </div>
+
+  <div class="q-card">
+    <p class="q-title">Q34 — Feelings about the trend shown in the visualization</p>
+    <div class="survey-row">
+      <span class="survey-tag s1-tag">Survey 1</span>
+      <div class="bar-wrap">
+        <div class="bar-item"><span class="bar-label">Not concerned</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:25%"></div></div><span class="bar-pct">25%</span></div>
+        <div class="bar-item"><span class="bar-label">Somewhat concerned</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:75%"></div></div><span class="bar-pct">75%</span></div>
+      </div>
+    </div>
+    <div class="survey-row">
+      <span class="survey-tag s2-tag">Survey 2</span>
+      <div class="bar-wrap">
+        <div class="bar-item"><span class="bar-label">Not concerned</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:25%"></div></div><span class="bar-pct">25%</span></div>
+        <div class="bar-item"><span class="bar-label">Somewhat concerned</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:50%"></div></div><span class="bar-pct">50%</span></div>
+        <div class="bar-item"><span class="bar-label">Very concerned</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:25%"></div></div><span class="bar-pct">25%</span></div>
+      </div>
+    </div>
+    <div class="avg-row">
+      <div class="avg-box">S1 avg <span>1.75</span></div>
+      <div class="avg-box">S2 avg <span>2.00</span></div>
+      <span class="diff-badge diff-down">S2 showed more concern — 1 "Very Concerned"</span>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <p class="q-title">Q36 — Economic viability of the energy source shown</p>
+    <div class="survey-row">
+      <span class="survey-tag s1-tag">Survey 1</span>
+      <div class="bar-wrap">
+        <div class="bar-item"><span class="bar-label">Slightly viable</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:50%"></div></div><span class="bar-pct">50%</span></div>
+        <div class="bar-item"><span class="bar-label">Moderately viable</span><div class="bar-track"><div class="bar-fill s1-fill" style="width:50%"></div></div><span class="bar-pct">50%</span></div>
+      </div>
+    </div>
+    <div class="survey-row">
+      <span class="survey-tag s2-tag">Survey 2</span>
+      <div class="bar-wrap">
+        <div class="bar-item"><span class="bar-label">Slightly viable</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:75%"></div></div><span class="bar-pct">75%</span></div>
+        <div class="bar-item"><span class="bar-label">Moderately viable</span><div class="bar-track"><div class="bar-fill s2-fill" style="width:25%"></div></div><span class="bar-pct">25%</span></div>
+      </div>
+    </div>
+    <div class="avg-row">
+      <div class="avg-box">S1 avg <span>2.50</span></div>
+      <div class="avg-box">S2 avg <span>2.25</span></div>
+      <span class="diff-badge diff-down">S2 slightly more pessimistic on viability</span>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+  <p class="section-label">Q37 — Open-ended: did chart design influence your feelings?</p>
+
+  <div class="grid2">
+    <div>
+      <p style="font-size:12px; font-weight:500; color:var(--color-text-secondary); margin:0 0 8px;">Survey 1 — Alarm condition</p>
+      <div class="open-text">Needed more context connecting kerosene price trends to the emotional/policy questions. Hard to interpret a price line graph without geopolitical context.</div>
+      <div class="open-text">Worried about making unfair comparisons. The Y-axis scale could easily influence perception — uneasy rating without seeing where other energy sources sit.</div>
+      <div class="open-text">No.</div>
+      <div class="open-text">Positions and past charts (more consumption but equal total price implied lower unit price, etc.)</div>
+    </div>
+    <div>
+      <p style="font-size:12px; font-weight:500; color:var(--color-text-secondary); margin:0 0 8px;">Survey 2 — Inverted/Neutral condition</p>
+      <div class="open-text">Blue was interesting for both charts — implies natural and safe. For geothermal that fits, but for kerosene it's misleading. Liked the charts overall; would've preferred more map labels.</div>
+      <div class="open-text">Seeing kerosene price volatility and overall increase made me even less in favor of it as a major energy source.</div>
+      <div class="open-text">Seeing a line go up is more emotionally charged than seeing a static map that aligns with prior ideas on energy consumption.</div>
+      <div class="open-text">Kerosene prices rise and fall frequently.</div>
+    </div>
+  </div>
+
+</div>
