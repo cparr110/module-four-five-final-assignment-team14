@@ -454,7 +454,7 @@ function priceOverTimeChart(svgId, color){
         d => d.Year
       ),
       ([year, val]) => val
-    ).sort((a, b) => a.Year - b.Year);
+    ).sort((a, b) => a.Year - b.Year).filter(d => d.Year > 1985);
 
     // scales
     const x = d3.scaleLinear()
